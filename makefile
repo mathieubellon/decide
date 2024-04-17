@@ -1,8 +1,11 @@
+port=8000 
+
 kill:
-	@lsof -ti :8000 | xargs kill -9
+	@lsof -ti :$(port) | xargs kill -9
+	@echo "Server killed on port $(port)"
 
-dev:
-	air -c .air.toml
-
+# Better reloader 
+# go install github.com/mitranim/gow@latest
 run:
-	go run server.go
+	@echo Running on Gow -  Stop with double Ctrl-C
+	@gow -e=go,html,django,css,js run .
