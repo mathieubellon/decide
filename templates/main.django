@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Decide</title>
+    <link rel="stylesheet" type="text/css" href="/static/main.css">
+    <script src="/static/main.js"></script>
+</head>
+<body>
+    {{embed}}
+</body>
+</html>

@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My Web Page</title>
-</head>
-<body>
+{% block content %}
     <h1>Hello, World 👋!</h1>
     <p>This is a basic HTML file.</p>
     <a href="/login/google">Auth with Google</a>
     <a href="/logout">Logout</a><a href="/ideas">Ideas</a>
-</body>
-</html>
+{% endblock %}

@@ -10,6 +10,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/session"
+	"github.com/gofiber/storage/postgres"
+	"github.com/gofiber/template/django/v3"
 	"github.com/joho/godotenv"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/providers/google"
@@ -20,18 +22,29 @@ import (
 func main() {
 
 	godotenv.Load()
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		Views:        django.New("./templates", ".django"),
+		ViewsLayout:  "main",
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	})
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://127.0.0.1/:8000",
+		AllowOrigins:     "http://127.0.0.1:8000",
 		AllowHeaders:     "Origin, Content-Type, Accept",
 		AllowCredentials: true,
 	}))
+	app.Static("/static", "./static")
+
+	storage := postgres.New(postgres.Config{
+		ConnectionURI: os.Getenv("POSTGRES_DATABASE_URL"),
+		Database:      "postgres",
+		Table:         "sessions",
+		Reset:         true,
+	})
 
 	store := session.New(session.Config{
-		KeyLookup:      "cookie:decide_session_id",
-		CookieSecure:   true,
-		CookieHTTPOnly: true,
+		Storage: storage,
 	})
 
 	goth.UseProviders(
@@ -61,7 +74,7 @@ func main() {
 
 	app.Get("/", func(ctx *fiber.Ctx) error {
 		sess, err := store.Get(ctx)
-		sess.Set("name", "john")
+		sess.Set("name", "asa")
 		sess.Set("provider", "google")
 		keys := sess.Keys()
 		sess.Save()
@@ -69,7 +82,7 @@ func main() {
 			return err
 		}
 		fmt.Println(time.Now().Format("15:04:05.000000"), sess.ID(), keys)
-		return ctx.SendFile("./index.html")
+		return ctx.Render("index", nil)
 	})
 
 	app.Get("/ideas", func(ctx *fiber.Ctx) error {
@@ -80,7 +93,7 @@ func main() {
 			return err
 		}
 		fmt.Println(user, provider)
-		return ctx.SendFile("./ideas.html")
+		return ctx.Render("ideas", nil)
 	})
 
 	if err := app.Listen(":8000"); err != nil {

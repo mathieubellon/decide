@@ -5,4 +5,4 @@ dev:
 	air -c .air.toml
 
 run:
-	go run main.go
+	go run server.go

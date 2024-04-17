@@ -3,15 +3,25 @@ module github.com/mathieubellon/godecide
 go 1.22.0
 
 require (
-	github.com/gofiber/fiber/v2 v2.49.0
+	github.com/gofiber/fiber/v2 v2.52.2
 	github.com/joho/godotenv v1.5.1
 	github.com/markbates/goth v1.79.0
 	github.com/shareed2k/goth_fiber v0.3.0
 )
 
 require (
+	github.com/flosch/pongo2/v6 v6.0.0 // indirect
+	github.com/gofiber/template v1.8.3 // indirect
+	github.com/gofiber/template/django/v3 v3.1.11 // indirect
+	github.com/gofiber/template/html/v2 v2.1.1 // indirect
+	github.com/gofiber/utils v1.1.0 // indirect
+	github.com/lib/pq v1.10.7 // indirect
+)
+
+require (
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
+	github.com/gofiber/storage/postgres v1.3.4
 	github.com/gofiber/storage/sqlite3 v1.3.8 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
