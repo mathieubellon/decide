@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -11,9 +10,9 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/gofiber/storage/postgres"
-	"github.com/gofiber/template/django/v3"
 	"github.com/joho/godotenv"
 	"github.com/markbates/goth"
+	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/google"
 
 	"github.com/shareed2k/goth_fiber"
@@ -23,32 +22,29 @@ func main() {
 
 	godotenv.Load()
 	app := fiber.New(fiber.Config{
-		Views:        django.New("./templates", ".django"),
-		ViewsLayout:  "main",
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	})
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://127.0.0.1:8000",
+		AllowOrigins:     "http://127.0.0.1:8000, http://localhost:5173",
 		AllowHeaders:     "Origin, Content-Type, Accept",
 		AllowCredentials: true,
 	}))
 	app.Static("/static", "./static")
 
-	storage := postgres.New(postgres.Config{
-		ConnectionURI: os.Getenv("POSTGRES_DATABASE_URL"),
-		Database:      "postgres",
-		Table:         "sessions",
-		Reset:         true,
-	})
-
 	store := session.New(session.Config{
-		Storage: storage,
+		Storage: postgres.New(postgres.Config{
+			ConnectionURI: os.Getenv("POSTGRES_DATABASE_URL"),
+			Database:      "godecide",
+			Table:         "sessions",
+			Reset:         true,
+		}),
 	})
 
 	goth.UseProviders(
-		google.New(os.Getenv("GOOGLE_KEY"), os.Getenv("GOOGLE_SECRET"), "http://127.0.0.1:8000/auth/callback/google"),
+		google.New(os.Getenv("GOOGLE_CLIENT_ID"), os.Getenv("GOOGLE_CLIENT_SECRET"), "http://127.0.0.1:8000/auth/callback/google"),
+		github.New(os.Getenv("GITHUB_CLIENT_ID"), os.Getenv("GITHUB_CLIENT_SECRET"), "http://127.0.0.1:8000/auth/callback/github"),
 	)
 
 	app.Get("/login/:provider", goth_fiber.BeginAuthHandler)
@@ -56,11 +52,17 @@ func main() {
 		CompleteUserAuthOptions := goth_fiber.CompleteUserAuthOptions{
 			ShouldLogout: false,
 		}
-		user, err := goth_fiber.CompleteUserAuth(ctx, CompleteUserAuthOptions)
+		_, err := goth_fiber.CompleteUserAuth(ctx, CompleteUserAuthOptions)
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Println(user)
+		sess, err := store.Get(ctx)
+		if err != nil {
+			return err
+		}
+		sess.Set("user", "bill")
+		sess.Set("provider", "github")
+		sess.Save()
 
 		return ctx.Redirect("/")
 	})
@@ -68,32 +70,43 @@ func main() {
 		if err := goth_fiber.Logout(ctx); err != nil {
 			log.Fatal(err)
 		}
+		// Destroy session
+		sess, err := store.Get(ctx)
+		if err != nil {
+			panic(err)
+		}
+		if err := sess.Destroy(); err != nil {
+			panic(err)
+		}
 
-		return ctx.SendString("logout")
+		return ctx.Redirect("/")
 	})
 
 	app.Get("/", func(ctx *fiber.Ctx) error {
-		sess, err := store.Get(ctx)
-		sess.Set("name", "asa")
-		sess.Set("provider", "google")
-		keys := sess.Keys()
-		sess.Save()
-		if err != nil {
-			return err
-		}
-		fmt.Println(time.Now().Format("15:04:05.000000"), sess.ID(), keys)
-		return ctx.Render("index", nil)
+		return ctx.Render("./index.html", nil)
 	})
 
 	app.Get("/ideas", func(ctx *fiber.Ctx) error {
 		sess, err := store.Get(ctx)
-		user := sess.Get("name")
-		provider := sess.Get("provider")
 		if err != nil {
 			return err
 		}
-		fmt.Println(user, provider)
-		return ctx.Render("ideas", nil)
+		return ctx.JSON(&fiber.Map{
+			"page":    "ideas",
+			"session": sess.ID(),
+		})
+	})
+	app.Get("/me", func(ctx *fiber.Ctx) error {
+		sess, err := store.Get(ctx)
+		if err != nil {
+			return err
+		}
+		return ctx.JSON(&fiber.Map{
+			"page":     "me",
+			"session":  sess.ID(),
+			"provider": sess.Get("provider"),
+			"keys":     sess.Keys(),
+		})
 	})
 
 	if err := app.Listen(":8000"); err != nil {
