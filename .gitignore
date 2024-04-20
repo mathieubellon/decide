@@ -30,3 +30,5 @@ coverage
 *.tsbuildinfo
 
 .env
+.vscode
+.DS_Store
