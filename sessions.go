@@ -8,21 +8,17 @@ import (
 	"github.com/gofiber/storage/postgres"
 )
 
-var store *session.Store
+var globalSession *session.Store = session.New(session.Config{
+	Storage: postgres.New(postgres.Config{
+		ConnectionURI: os.Getenv("POSTGRES_DATABASE_URL"),
+		Database:      "godecide",
+		Table:         "sessions",
+	}),
+	Expiration: 1 * time.Hour,
+	KeyLookup:  "cookie:godecide_session",
+})
 
 // Init sessions store
-func InitSessionsStore() {
-	store = session.New(session.Config{
-		Storage: postgres.New(postgres.Config{
-			ConnectionURI: os.Getenv("POSTGRES_DATABASE_URL"),
-			Database:      "godecide",
-			Table:         "sessions",
-			Reset:         true,
-		}),
-		Expiration: 1 * time.Hour,
-		KeyLookup:  "cookie:godecide_session",
-	})
-}
 
 // func CreateUserSession(c *fiber.Ctx, uid string) error {
 // 	// Get or create session

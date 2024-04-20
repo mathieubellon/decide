@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const user = ref({});
 const fetchData = async () => {
@@ -12,6 +12,9 @@ const fetchData = async () => {
     console.error(error);
   }
 };
+onMounted(() => {
+  fetchData();
+});
 </script>
 
 <template>

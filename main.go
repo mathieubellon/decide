@@ -17,10 +17,6 @@ import (
 	"github.com/shareed2k/goth_fiber"
 )
 
-func init() {
-	InitSessionsStore()
-}
-
 func main() {
 	godotenv.Load()
 	connectDB()

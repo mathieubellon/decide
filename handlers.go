@@ -8,22 +8,34 @@ import (
 )
 
 func Homepage(ctx *fiber.Ctx) error {
-	return ctx.Render("./index.html", nil)
+	session, err := globalSession.Get(ctx) // Get session ( creates one if not exist )
+	if err != nil {
+		return err
+	}
+	log.Println(session.ID())
+	log.Println(session.Get("userEmail"))
+	return ctx.Render("./index.html", fiber.Map{"Email": session.Get("userEmail")})
 }
 
 func ListIdeas(ctx *fiber.Ctx) error {
-	sess, err := store.Get(ctx)
+	store, err := globalSession.Get(ctx) // Get session ( creates one if not exist )
+	if err != nil {
+		return err
+	}
 	if err != nil {
 		return err
 	}
 	return ctx.JSON(&fiber.Map{
 		"page":    "ideas",
-		"session": sess.ID(),
+		"session": store.ID(),
 	})
 }
 
 func Me(ctx *fiber.Ctx) error {
-	sess, err := store.Get(ctx)
+	sess, err := globalSession.Get(ctx) // Get session ( creates one if not exist )
+	if err != nil {
+		return err
+	}
 	if err != nil {
 		return err
 	}
@@ -43,7 +55,10 @@ func Logout(ctx *fiber.Ctx) error {
 		log.Fatal(err)
 	}
 	// Destroy session
-	sess, err := store.Get(ctx)
+	sess, err := globalSession.Get(ctx) // Get session ( creates one if not exist )
+	if err != nil {
+		return err
+	}
 	if err != nil {
 		panic(err)
 	}
@@ -64,11 +79,16 @@ func Callback(ctx *fiber.Ctx) error {
 	appuser.Email = user.Email
 	db.Create(appuser)
 
-	sess, err := store.Get(ctx)
+	sess, err := globalSession.Get(ctx) // Get session ( creates one if not exist )
+	if err != nil {
+		return err
+	}
 	sess.Fresh()
 	sess.Set("userEmail", user.Email)
 	sess.Set("provider", "github")
 	sess.Save()
+
+	log.Println(sess)
 
 	return ctx.JSON(user)
 }
