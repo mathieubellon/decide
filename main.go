@@ -42,10 +42,10 @@ func main() {
 		github.New(os.Getenv("GITHUB_CLIENT_ID"), os.Getenv("GITHUB_CLIENT_SECRET"), "http://127.0.0.1:8000/auth/callback/github"),
 	)
 
+	app.Get("/", Homepage) // Serves vue frontend
 	app.Get("/login/:provider", goth_fiber.BeginAuthHandler)
 	app.Get("/auth/callback/:provider", Callback)
 	app.Get("/logout", Logout)
-	app.Get("/", Homepage)
 	app.Get("/ideas", ListIdeas)
 	app.Get("/me", Me)
 
