@@ -24,7 +24,7 @@ func connectDB() error {
 	db.Logger = logger.Default.LogMode(logger.Info)
 	log.Println("Running Migrations")
 
-	db.AutoMigrate(&User{}, &UserSession{})
+	db.AutoMigrate(&User{}, &UserSession{}, &Workspace{})
 
 	return nil
 }

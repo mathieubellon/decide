@@ -36,17 +36,17 @@ func Me(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	if err != nil {
-		return err
-	}
 
 	return ctx.JSON(&fiber.Map{
-		"page":     "me",
-		"session":  sess.ID(),
-		"user":     sess.Get("userEmail"),
-		"provider": sess.Get("provider"),
-		"keys":     sess.Keys(),
-		"fresh":    sess.Fresh(),
+		"page":          "me",
+		"session":       sess.ID(),
+		"user":          sess.Get("userEmail"),
+		"provider":      sess.Get("provider"),
+		"userID":        sess.Get("userID"),
+		"workspaceID":   sess.Get("workspaceID"),
+		"workspaceName": sess.Get("workspaceName"),
+		"fresh":         sess.Fresh(),
+		"keys":          sess.Keys(),
 	})
 }
 
@@ -70,14 +70,15 @@ func Logout(ctx *fiber.Ctx) error {
 }
 
 func Callback(ctx *fiber.Ctx) error {
-	user, err := goth_fiber.CompleteUserAuth(ctx)
+	oauthResponse, err := goth_fiber.CompleteUserAuth(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	appuser := new(User)
-	appuser.Email = user.Email
-	db.Create(appuser)
+	user, err := FindOrCreateUser(oauthResponse)
+	if err != nil {
+		return ctx.SendStatus(500)
+	}
 
 	sess, err := globalSession.Get(ctx) // Get session ( creates one if not exist )
 	if err != nil {
@@ -86,9 +87,12 @@ func Callback(ctx *fiber.Ctx) error {
 	sess.Fresh()
 	sess.Set("userEmail", user.Email)
 	sess.Set("provider", "github")
+	sess.Set("userID", user.ID)
+	// sess.Set("workspaceID", wp.ID)
+	// sess.Set("workspaceName", wp.Name)
 	sess.Save()
 
 	log.Println(sess)
 
-	return ctx.JSON(user)
+	return ctx.JSON(oauthResponse)
 }
