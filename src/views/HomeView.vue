@@ -20,6 +20,7 @@ onMounted(() => {
 <template>
   <main>
     <h1>Hello, World 👋!</h1>
+    <img :src="user.avatarURL" alt="">
     <p>This is a basic HTML file.</p>
     <a href="/login/google">Auth with Google</a>
     <a href="/login/github">Auth with Github</a>

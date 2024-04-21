@@ -37,15 +37,28 @@ func Me(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	if sess.Fresh() {
+		return ctx.JSON(&fiber.Map{
+			"page": "Unauthenticated",
+		})
+	}
+	var user User
+
+	errow := db.Model(&User{}).Preload("SocialAccounts").Find(&user, sess.Get("userID").(uint)).Error
+	if errow != nil {
+		return err
+	}
+
 	return ctx.JSON(&fiber.Map{
 		"page":          "me",
 		"session":       sess.ID(),
 		"user":          sess.Get("userEmail"),
 		"provider":      sess.Get("provider"),
+		"userUUID":      sess.Get("userUUID"),
 		"userID":        sess.Get("userID"),
 		"workspaceID":   sess.Get("workspaceID"),
 		"workspaceName": sess.Get("workspaceName"),
-		"fresh":         sess.Fresh(),
+		"avatarURL":     user.SocialAccounts[0].AvatarURL,
 		"keys":          sess.Keys(),
 	})
 }
@@ -86,8 +99,10 @@ func Callback(ctx *fiber.Ctx) error {
 	}
 	sess.Fresh()
 	sess.Set("userEmail", user.Email)
-	sess.Set("provider", "github")
+	// sess.Set("provider", user.SocialAccounts[0].Provider)
+	sess.Set("userUUID", user.UUID)
 	sess.Set("userID", user.ID)
+	// sess.Set("avatarURL", user.SocialAccounts[0].AvatarURL)
 	// sess.Set("workspaceID", wp.ID)
 	// sess.Set("workspaceName", wp.Name)
 	sess.Save()

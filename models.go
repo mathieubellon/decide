@@ -5,10 +5,11 @@ import (
 )
 
 type User struct {
-	gorm.Model   `json:"-"`
-	Email        string        `json:"email"`
-	UserSessions []UserSession `json:"user_sessions,omitempty"`
-	UUID         string        `json:"uuid" gorm:"unique;not null; index"`
+	gorm.Model     `json:"-"`
+	Email          string          `json:"email"`
+	UUID           string          `json:"uuid" gorm:"unique;not null; index"`
+	UserSessions   []UserSession   `json:"user_sessions,omitempty"`
+	SocialAccounts []SocialAccount `json:"social_accounts,omitempty"`
 }
 
 type UserSession struct {
@@ -26,4 +27,15 @@ type Workspace struct {
 	Name       string `json:"name"`
 	Users      []User `json:"users,omitempty" gorm:"many2many:workspace_users;"`
 	UUID       string `json:"uuid" gorm:"unique;not null; index"`
+}
+
+type SocialAccount struct {
+	gorm.Model `json:"-"`
+	Provider   string `json:"provider"`
+	UID        string `json:"uid"`
+	UserID     uint   `json:"user_id"`
+	Firstname  string `json:"firstname"`
+	Lastname   string `json:"lastname"`
+	Nickname   string `json:"nickname"`
+	AvatarURL  string `json:"avatar_url"`
 }
