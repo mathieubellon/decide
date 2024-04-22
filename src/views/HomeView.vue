@@ -12,6 +12,15 @@ const fetchData = async () => {
     console.error(error);
   }
 };
+const pingIdeas = async () => {
+  try {
+    const response = await fetch('/ideas');
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.error(error);
+  }
+};
 onMounted(() => {
   fetchData();
 });
@@ -26,6 +35,7 @@ onMounted(() => {
     <a href="/login/github">Auth with Github</a>
     <a href="/logout">Logout</a><a href="/ideas">Ideas</a>
     <button @click="fetchData">Fetch API</button>
+    <button @click="pingIdeas">Ping Ideas</button>
     <router-link to="/about">About</router-link>
     <pre>{{ user }}</pre>
   </main>

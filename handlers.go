@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
+	"github.com/Pallinder/go-randomdata"
 	"github.com/gofiber/fiber/v2"
 	"github.com/shareed2k/goth_fiber"
 )
@@ -20,12 +22,20 @@ func ListIdeas(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	if err != nil {
-		return err
+
+	idea := Idea{Title: fmt.Sprintf("%s %s %s", randomdata.SillyName(), randomdata.Noun(), randomdata.Adjective()), Description: randomdata.Paragraph(), Votes: randomdata.Number(1000), UserID: store.Get("userID").(uint), WorkspaceID: store.Get("workspaceID").(uint), Reach: randomdata.Number(5), Priority: randomdata.Number(10)}
+	if err := db.Create(&idea).Error; err != nil {
+		log.Println(err)
 	}
+
+	var workspace Workspace
+
+	db.Model(&Workspace{}).Preload("Ideas").Find(&workspace, store.Get("workspaceID").(uint))
+
 	return ctx.JSON(&fiber.Map{
-		"page":    "ideas",
-		"session": store.ID(),
+		"page":  "ideas",
+		"idea":  idea,
+		"ideas": workspace.Ideas,
 	})
 }
 
