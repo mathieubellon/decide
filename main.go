@@ -26,7 +26,6 @@ func main() {
 	})
 	app.Use(logger.New())
 	app.Use(csrf.New())
-	app.Use(Onboarding)
 	app.Use(MakeSession)
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://127.0.0.1:8000, http://localhost:5173",

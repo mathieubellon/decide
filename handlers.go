@@ -86,7 +86,7 @@ func Callback(ctx *fiber.Ctx) error {
 		log.Fatal(err)
 	}
 
-	user, err := FindOrCreateUser(oauthResponse)
+	user, workspace, err := FindOrCreateUser(oauthResponse)
 	if err != nil {
 		return ctx.SendStatus(500)
 	}
@@ -97,12 +97,12 @@ func Callback(ctx *fiber.Ctx) error {
 	}
 	sess.Fresh()
 	sess.Set("userEmail", user.Email)
-	// sess.Set("provider", user.SocialAccounts[0].Provider)
+	//	sess.Set("provider", user.SocialAccounts[0].Provider)
 	sess.Set("userUUID", user.UUID)
 	sess.Set("userID", user.ID)
-	// sess.Set("avatarURL", user.SocialAccounts[0].AvatarURL)
-	// sess.Set("workspaceID", wp.ID)
-	// sess.Set("workspaceName", wp.Name)
+	//	sess.Set("avatarURL", user.SocialAccounts[0].AvatarURL)
+	sess.Set("workspaceID", workspace.ID)
+	sess.Set("workspaceName", workspace.Name)
 	sess.Save()
 
 	log.Println(sess)

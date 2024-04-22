@@ -7,10 +7,9 @@ import (
 type User struct {
 	gorm.Model     `json:"-"`
 	Email          string          `json:"email"`
-	UUID           string          `json:"uuid" gorm:"unique;not null; index"`
+	UUID           string          `json:"uuid" gorm:"unique;not null; index;default:null"`
 	UserSessions   []UserSession   `json:"user_sessions,omitempty"`
 	SocialAccounts []SocialAccount `json:"social_accounts,omitempty"`
-	WorkspaceID    uint            `json:"workspace_id"`
 }
 
 type UserSession struct {
@@ -27,7 +26,7 @@ type Workspace struct {
 	gorm.Model `json:"-"`
 	Name       string `json:"name"`
 	Users      []User `json:"users,omitempty" gorm:"many2many:workspace_users;"`
-	UUID       string `json:"uuid" gorm:"unique;not null; index"`
+	UUID       string `json:"uuid" gorm:"unique;not null; index;default:null"`
 }
 
 type SocialAccount struct {

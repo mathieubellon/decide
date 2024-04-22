@@ -6,6 +6,7 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var db *gorm.DB
@@ -20,7 +21,7 @@ func connectDB() error {
 	db = Database
 
 	log.Println("Connected Successfully to Database")
-	// db.Logger = logger.Default.LogMode(logger.Info)
+	db.Logger = logger.Default.LogMode(logger.Info)
 	log.Println("Running Migrations")
 
 	db.AutoMigrate(&User{}, &UserSession{}, &Workspace{}, &SocialAccount{})

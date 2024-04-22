@@ -1,12 +1,14 @@
 package main
 
 import (
+	"github.com/Pallinder/go-randomdata"
 	"github.com/google/uuid"
 	"github.com/markbates/goth"
 )
 
-func FindOrCreateUser(oauthResponse goth.User) (*User, error) {
+func FindOrCreateUser(oauthResponse goth.User) (*User, *Workspace, error) {
 	user := &User{}
+	workspace := &Workspace{}
 	if err := db.Where("email = ?", oauthResponse.Email).First(user).Error; err != nil {
 		user.Email = oauthResponse.Email
 		user.UUID = uuid.Must(uuid.NewRandom()).String()
@@ -18,12 +20,21 @@ func FindOrCreateUser(oauthResponse goth.User) (*User, error) {
 			Nickname:  oauthResponse.NickName,
 			AvatarURL: oauthResponse.AvatarURL,
 		})
-		// TODO if email already exists add social account to user
-		// TODO Force email presence (Github does not provide email)
-
-		if err := db.Create(user).Error; err != nil {
-			return nil, err
+		if err := db.Create(&user).Error; err != nil {
+			return nil, nil, err
 		}
+		workspace.Name = randomdata.SillyName()
+		workspace.UUID = uuid.Must(uuid.NewRandom()).String()
+		if err := db.Create(&workspace).Error; err != nil {
+			return nil, nil, err
+		}
+		db.Model(&workspace).Association("Users").Append(user)
 	}
-	return user, nil
+
+	db.Model(&workspace).Association("Users").Find(&user)
+
+	// TODO if email already exists add social account to user
+	// TODO Force email presence (Github does not provide email in 100% of cases)
+
+	return user, workspace, nil
 }
