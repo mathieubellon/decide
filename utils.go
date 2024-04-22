@@ -18,7 +18,8 @@ func FindOrCreateUser(oauthResponse goth.User) (*User, error) {
 			Nickname:  oauthResponse.NickName,
 			AvatarURL: oauthResponse.AvatarURL,
 		})
-		// Todo if email already exists add social account to user
+		// TODO if email already exists add social account to user
+		// TODO Force email presence (Github does not provide email)
 
 		if err := db.Create(user).Error; err != nil {
 			return nil, err

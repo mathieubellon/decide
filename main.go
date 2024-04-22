@@ -26,6 +26,8 @@ func main() {
 	})
 	app.Use(logger.New())
 	app.Use(csrf.New())
+	app.Use(Onboarding)
+	app.Use(MakeSession)
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://127.0.0.1:8000, http://localhost:5173",
 		AllowHeaders:     "Origin, Content-Type, Accept",
@@ -34,7 +36,7 @@ func main() {
 	app.Static("/static", "./static")
 
 	goth.UseProviders(
-		google.New(os.Getenv("GOOGLE_CLIENT_ID"), os.Getenv("GOOGLE_CLIENT_SECRET"), "http://127.0.0.1:8000/auth/callback/google"),
+		google.New(os.Getenv("GOOGLE_CLIENT_ID"), os.Getenv("GOOGLE_CLIENT_SECRET"), "http://127.0.0.1:8000/auth/callback/google"), // TODO make BASE_URL an env variable
 		github.New(os.Getenv("GITHUB_CLIENT_ID"), os.Getenv("GITHUB_CLIENT_SECRET"), "http://127.0.0.1:8000/auth/callback/github"),
 	)
 

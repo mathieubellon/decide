@@ -12,8 +12,6 @@ func Homepage(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	log.Println(session.ID())
-	log.Println(session.Get("userEmail"))
 	return ctx.Render("./index.html", fiber.Map{"Email": session.Get("userEmail")})
 }
 

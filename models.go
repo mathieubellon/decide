@@ -10,6 +10,7 @@ type User struct {
 	UUID           string          `json:"uuid" gorm:"unique;not null; index"`
 	UserSessions   []UserSession   `json:"user_sessions,omitempty"`
 	SocialAccounts []SocialAccount `json:"social_accounts,omitempty"`
+	WorkspaceID    uint            `json:"workspace_id"`
 }
 
 type UserSession struct {
