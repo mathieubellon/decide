@@ -22,6 +22,7 @@ type Idea struct {
 	WorkspaceID uint   `json:"workspace_id"`
 	Reach       int    `json:"reach"`
 	Priority    int    `json:"priority"`
+	Calculated  int    `json:"calculated" gorm:"-"`
 }
 
 type Formula struct {
