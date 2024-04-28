@@ -7,7 +7,10 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: HomeView,
+      meta: {
+        requiresAuth: true // Add meta field to indicate protected route
+      }
     },
         {
       path: '/login',
@@ -32,5 +35,22 @@ const router = createRouter({
     },
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth) {
+    const token = document.cookie.match('godecide_session')
+    console.log("Token: ", token)
+    if (token) {
+      console.log("// User is authenticated, proceed to the route")
+      next();
+    } else {
+      console.log("// User is not authenticated, redirect to login")
+      next('/login');
+    }
+  } else {
+    // Non-protected route, allow access
+    next();
+  }
+});
 
 export default router
