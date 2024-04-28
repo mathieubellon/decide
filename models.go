@@ -5,7 +5,8 @@ import (
 )
 
 type User struct {
-	gorm.Model     `json:"-"`
+	gorm.Model `json:"-"`
+	//ID             uuid.UUID       `gorm:"type:uuid;default:uuid_generate_v4();primary_key;" json:"id"`
 	Email          string          `json:"email"`
 	UUID           string          `json:"uuid" gorm:"unique;not null; index;default:null"`
 	UserSessions   []UserSession   `json:"user_sessions,omitempty"`

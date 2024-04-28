@@ -18,22 +18,25 @@ func Homepage(ctx *fiber.Ctx) error {
 }
 
 func ListIdeas(ctx *fiber.Ctx) error {
-	store, err := globalSession.Get(ctx) // Get session ( creates one if not exist )
+	store, err := globalSession.Get(ctx)
 	if err != nil {
 		return err
 	}
+
+	wid := store.Get("workspaceID").(uint)
+	uid := store.Get("userID").(uint)
 
 	idea := Idea{
 		Title:       fmt.Sprintf("%s %s %s", randomdata.SillyName(), randomdata.Noun(), randomdata.Adjective()),
 		Description: randomdata.Paragraph(),
 		Votes:       randomdata.Number(1000),
-		UserID:      store.Get("userID").(uint),
-		WorkspaceID: store.Get("workspaceID").(uint),
+		UserID:      uid,
+		WorkspaceID: wid,
 		Reach:       randomdata.Number(5),
 		Priority:    randomdata.Number(10),
 	}
 	if err := db.Create(&idea).Error; err != nil {
-		log.Println(err)
+		panic(err)
 	}
 
 	var workspace Workspace
@@ -53,11 +56,6 @@ func Me(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if sess.Fresh() {
-		return ctx.JSON(&fiber.Map{
-			"page": "Unauthenticated",
-		})
-	}
 	var user User
 
 	errow := db.Model(&User{}).Preload("SocialAccounts").Preload("Workspaces").Find(&user, sess.Get("userID").(uint)).Error
@@ -68,13 +66,13 @@ func Me(ctx *fiber.Ctx) error {
 	return ctx.JSON(&fiber.Map{
 		"page":          "me",
 		"session":       sess.ID(),
-		"user":          sess.Get("userEmail"),
-		"provider":      sess.Get("provider"),
+		"user":          user.Email,
 		"userUUID":      user.UUID,
 		"userID":        user.ID,
 		"workspaceID":   user.Workspaces[0].ID,
 		"workspaceName": user.Workspaces[0].Name,
 		"avatarURL":     user.SocialAccounts[0].AvatarURL,
+		"provider":      user.SocialAccounts[0].Provider,
 		"keys":          sess.Keys(),
 	})
 }
@@ -108,17 +106,7 @@ func Callback(ctx *fiber.Ctx) error {
 		})
 	}
 
-	sess, err := globalSession.Get(ctx) // Get session ( creates one if not exist )
-	if err != nil {
-		return err
-	}
-	sess.Fresh()
-	sess.Set("userEmail", user.Email)
-	//	sess.Set("provider", user.SocialAccounts[0].Provider)
-	sess.Set("userUUID", user.UUID)
-	sess.Set("userID", user.ID)
-	//	sess.Set("avatarURL", user.SocialAccounts[0].AvatarURL)
-	sess.Save()
+	CreateUserSession(ctx, user.ID)
 
-	return ctx.JSON(oauthResponse)
+	return ctx.RedirectToRoute("index", nil)
 }

@@ -27,6 +27,7 @@ func init() {
 
 func main() {
 	connectDB()
+	initSession()
 	app := fiber.New(fiber.Config{
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
@@ -55,7 +56,10 @@ func main() {
 	app.Get("/logout", Logout)
 
 	api := app.Group("/api") // /api
+
+	// Authentication required for all routes beginning with /api
 	api.Use(Protected)
+
 	api.Get("/me", Me)
 	v1 := api.Group("/v1") // /api/v1
 	v1.Get("/ideas", ListIdeas)
