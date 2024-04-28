@@ -43,14 +43,15 @@ func main() {
 		AllowHeaders:     "Origin, Content-Type, Accept",
 		AllowCredentials: true,
 	}))
-	app.Static("/static", "./static")
 
 	goth.UseProviders(
 		google.New(os.Getenv("GOOGLE_CLIENT_ID"), os.Getenv("GOOGLE_CLIENT_SECRET"), "http://127.0.0.1:8000/auth/callback/google"), // TODO make BASE_URL an env variable
 		github.New(os.Getenv("GITHUB_CLIENT_ID"), os.Getenv("GITHUB_CLIENT_SECRET"), "http://127.0.0.1:8000/auth/callback/github"),
 	)
 
-	app.Get("/", Homepage).Name("index") // Serves vue frontend
+	app.Static("/", "./index.html")
+
+	app.Get("/home", Homepage).Name("index") // Serves vue frontend
 	app.Get("/login/:provider", goth_fiber.BeginAuthHandler)
 	app.Get("/auth/callback/:provider", Callback)
 	app.Get("/logout", Logout)
@@ -64,12 +65,8 @@ func main() {
 	v1 := api.Group("/v1") // /api/v1
 	v1.Get("/ideas", ListIdeas)
 
-	// Catch All route for 404 : TODO : handle this frontend only ?
-	app.Use(func(c *fiber.Ctx) error {
-		return c.SendStatus(404) // => 404 "Not Found"
-	})
-	// data, _ := json.MarshalIndent(app.GetRoutes(true), "", "  ")
-	// fmt.Print(string(data))
+	// 404 are handled by frontend => see ./src/router/index.js
+	app.Static("*", "./index.html")
 
 	if err := app.Listen(":8000"); err != nil {
 		log.Fatal(err)

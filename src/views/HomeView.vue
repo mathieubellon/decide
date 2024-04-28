@@ -37,6 +37,7 @@ onMounted(() => {
     <button @click="fetchData">Fetch API</button>
     <button @click="pingIdeas">Ping Ideas</button>
     <router-link to="/about">About</router-link>
+    <a href="/about">About backend router</a>
     <pre>{{ user }}</pre>
   </main>
 </template>
