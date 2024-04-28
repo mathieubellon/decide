@@ -1,12 +1,18 @@
 package main
 
 import (
+	"errors"
+
 	"github.com/Pallinder/go-randomdata"
 	"github.com/google/uuid"
 	"github.com/markbates/goth"
 )
 
+// TODO if email already exists add social account to user
 func FindOrCreateUser(oauthResponse goth.User) (*User, error) {
+	if oauthResponse.Email == "" {
+		return nil, errors.New("email must be provided by the OAuth provider")
+	}
 	user := User{}
 	workspace := Workspace{}
 	if err := db.Where("email = ?", oauthResponse.Email).First(&user).Error; err != nil {
@@ -30,9 +36,5 @@ func FindOrCreateUser(oauthResponse goth.User) (*User, error) {
 		}
 		db.Model(&workspace).Association("Users").Append(&user)
 	}
-
-	// TODO if email already exists add social account to user
-	// TODO Force email presence (Github does not provide email in 100% of cases)
-
 	return &user, nil
 }

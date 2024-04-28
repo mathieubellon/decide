@@ -104,7 +104,9 @@ func Callback(ctx *fiber.Ctx) error {
 
 	user, err := FindOrCreateUser(oauthResponse)
 	if err != nil {
-		return ctx.SendStatus(500)
+		return ctx.Status(401).JSON(&fiber.Map{
+			"error": err.Error(),
+		})
 	}
 
 	sess, err := globalSession.Get(ctx) // Get session ( creates one if not exist )
