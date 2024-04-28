@@ -35,11 +35,12 @@ func main() {
 	app.Use(logger.New())
 	app.Use(csrf.New())
 	app.Use(recover.New())
-	app.Use(helmet.New())
-	// 404 Handler
+	app.Use(helmet.New(helmet.Config{
+		CrossOriginEmbedderPolicy: "credentialless", // Load avatar from external resources https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Embedder-Policy
+	}))
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://127.0.0.1:8000, http://localhost:5173",
+		AllowOrigins:     "http://127.0.0.1:8000, http://localhost:5173, https://lh3.googleusercontent.com",
 		AllowHeaders:     "Origin, Content-Type, Accept",
 		AllowCredentials: true,
 	}))
