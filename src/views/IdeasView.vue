@@ -7,6 +7,9 @@
                     <th>Title</th>
                     <th>Description</th>
                     <th>Workspace</th>
+                    <th>priority</th>
+                    <th>reach</th>
+                    <th>votes</th>
                 </tr>
             </thead>
             <tbody>
@@ -14,6 +17,9 @@
                     <td>{{ idea.title }}</td>
                     <td>{{ idea.description }}</td>
                     <td>{{ idea.workspace_id }}</td>
+                    <td>{{ idea.priority }}</td>
+                    <td>{{ idea.reach }}</td>
+                    <td>{{ idea.votes }}</td>
                 </tr>
             </tbody>
         </table>
