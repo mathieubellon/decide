@@ -4,7 +4,7 @@ import { ref, onMounted } from 'vue';
 const user = ref({});
 const fetchData = async () => {
   try {
-    const response = await fetch('/me');
+    const response = await fetch('/api/me');
     const data = await response.json();
     console.log(data);
     user.value = data;
@@ -14,7 +14,7 @@ const fetchData = async () => {
 };
 const pingIdeas = async () => {
   try {
-    const response = await fetch('/ideas');
+    const response = await fetch('/api/v1/ideas');
     const data = await response.json();
     console.log(data);
   } catch (error) {
@@ -37,6 +37,7 @@ onMounted(() => {
     <button @click="fetchData">Fetch API</button>
     <button @click="pingIdeas">Ping Ideas</button>
     <router-link to="/about">About</router-link>
+    <a href="/about">About backend router</a>
     <pre>{{ user }}</pre>
   </main>
 </template>

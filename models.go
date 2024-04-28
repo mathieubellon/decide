@@ -5,12 +5,14 @@ import (
 )
 
 type User struct {
-	gorm.Model     `json:"-"`
+	gorm.Model `json:"-"`
+	//ID             uuid.UUID       `gorm:"type:uuid;default:uuid_generate_v4();primary_key;" json:"id"`
 	Email          string          `json:"email"`
 	UUID           string          `json:"uuid" gorm:"unique;not null; index;default:null"`
 	UserSessions   []UserSession   `json:"user_sessions,omitempty"`
 	SocialAccounts []SocialAccount `json:"social_accounts,omitempty"`
 	Ideas          []Idea          `json:"user_ideas,omitempty"`
+	Workspaces     []Workspace     `json:"workspaces,omitempty" gorm:"many2many:workspace_users;"`
 }
 
 type Idea struct {
@@ -22,6 +24,7 @@ type Idea struct {
 	WorkspaceID uint   `json:"workspace_id"`
 	Reach       int    `json:"reach"`
 	Priority    int    `json:"priority"`
+	Calculated  int    `json:"calculated" gorm:"-"`
 }
 
 type Formula struct {
