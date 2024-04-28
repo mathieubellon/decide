@@ -6,14 +6,14 @@
                 <tr>
                     <th>Title</th>
                     <th>Description</th>
-                    <th>Author</th>
+                    <th>Workspace</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="idea in ideas.ideas" :key="idea.id">
                     <td>{{ idea.title }}</td>
                     <td>{{ idea.description }}</td>
-                    <td>{{ idea.author }}</td>
+                    <td>{{ idea.workspace_id }}</td>
                 </tr>
             </tbody>
         </table>
