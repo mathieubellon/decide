@@ -23,7 +23,15 @@ func ListIdeas(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	idea := Idea{Title: fmt.Sprintf("%s %s %s", randomdata.SillyName(), randomdata.Noun(), randomdata.Adjective()), Description: randomdata.Paragraph(), Votes: randomdata.Number(1000), UserID: store.Get("userID").(uint), WorkspaceID: store.Get("workspaceID").(uint), Reach: randomdata.Number(5), Priority: randomdata.Number(10)}
+	idea := Idea{
+		Title:       fmt.Sprintf("%s %s %s", randomdata.SillyName(), randomdata.Noun(), randomdata.Adjective()),
+		Description: randomdata.Paragraph(),
+		Votes:       randomdata.Number(1000),
+		UserID:      store.Get("userID").(uint),
+		WorkspaceID: store.Get("workspaceID").(uint),
+		Reach:       randomdata.Number(5),
+		Priority:    randomdata.Number(10),
+	}
 	if err := db.Create(&idea).Error; err != nil {
 		log.Println(err)
 	}
@@ -85,9 +93,6 @@ func Logout(ctx *fiber.Ctx) error {
 	sess, err := globalSession.Get(ctx) // Get session ( creates one if not exist )
 	if err != nil {
 		return err
-	}
-	if err != nil {
-		panic(err)
 	}
 	if err := sess.Destroy(); err != nil {
 		panic(err)

@@ -43,8 +43,11 @@ func main() {
 	app.Get("/login/:provider", goth_fiber.BeginAuthHandler)
 	app.Get("/auth/callback/:provider", Callback)
 	app.Get("/logout", Logout)
-	app.Get("/ideas", ListIdeas)
-	app.Get("/me", Me)
+
+	api := app.Group("/api") // /api
+	api.Get("/me", Me)
+	v1 := api.Group("/v1") // /api/v1
+	v1.Get("/ideas", ListIdeas)
 
 	if err := app.Listen(":8000"); err != nil {
 		log.Fatal(err)
