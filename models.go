@@ -11,6 +11,7 @@ type User struct {
 	UserSessions   []UserSession   `json:"user_sessions,omitempty"`
 	SocialAccounts []SocialAccount `json:"social_accounts,omitempty"`
 	Ideas          []Idea          `json:"user_ideas,omitempty"`
+	Workspaces     []Workspace     `json:"workspaces,omitempty" gorm:"many2many:workspace_users;"`
 }
 
 type Idea struct {

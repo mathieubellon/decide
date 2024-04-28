@@ -52,20 +52,26 @@ func Me(ctx *fiber.Ctx) error {
 	}
 	var user User
 
-	errow := db.Model(&User{}).Preload("SocialAccounts").Find(&user, sess.Get("userID").(uint)).Error
+	errow := db.Model(&User{}).Preload("SocialAccounts").Preload("Workspaces").Find(&user, sess.Get("userID").(uint)).Error
 	if errow != nil {
 		return err
 	}
+	fmt.Println(user)
+
+	// workspace := Workspace{}
+	// db.Where("email = ?", sess.Get("userEmail")).First(&user)
+
+	// db.Model(&workspace).Preload("Users").Find(&user)
 
 	return ctx.JSON(&fiber.Map{
 		"page":          "me",
 		"session":       sess.ID(),
 		"user":          sess.Get("userEmail"),
 		"provider":      sess.Get("provider"),
-		"userUUID":      sess.Get("userUUID"),
-		"userID":        sess.Get("userID"),
-		"workspaceID":   sess.Get("workspaceID"),
-		"workspaceName": sess.Get("workspaceName"),
+		"userUUID":      user.UUID,
+		"userID":        user.ID,
+		"workspaceID":   user.Workspaces[0].ID,
+		"workspaceName": user.Workspaces[0].Name,
 		"avatarURL":     user.SocialAccounts[0].AvatarURL,
 		"keys":          sess.Keys(),
 	})
@@ -96,7 +102,7 @@ func Callback(ctx *fiber.Ctx) error {
 		log.Fatal(err)
 	}
 
-	user, workspace, err := FindOrCreateUser(oauthResponse)
+	user, err := FindOrCreateUser(oauthResponse)
 	if err != nil {
 		return ctx.SendStatus(500)
 	}
@@ -111,11 +117,7 @@ func Callback(ctx *fiber.Ctx) error {
 	sess.Set("userUUID", user.UUID)
 	sess.Set("userID", user.ID)
 	//	sess.Set("avatarURL", user.SocialAccounts[0].AvatarURL)
-	sess.Set("workspaceID", workspace.ID)
-	sess.Set("workspaceName", workspace.Name)
 	sess.Save()
-
-	log.Println(sess)
 
 	return ctx.JSON(oauthResponse)
 }
