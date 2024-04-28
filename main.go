@@ -58,7 +58,6 @@ func main() {
 	app.Get("/logout", Logout)
 
 	api := app.Group("/api") // /api
-
 	// Authentication required for all routes beginning with /api
 	api.Use(Protected)
 

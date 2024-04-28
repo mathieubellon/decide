@@ -8,4 +8,4 @@ kill:
 # go install github.com/mitranim/gow@latest
 run:
 	@echo Running on Gow -  Stop with double Ctrl-C
-	@gow -e=go,html,django,css,js run .
+	@gow -e=go,html run .
