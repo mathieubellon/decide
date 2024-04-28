@@ -32,10 +32,12 @@ onMounted(() => {
     <img :src="user.avatarURL" alt="">
 
 
-    <a href="/logout">Logout</a><a href="/ideas">Ideas</a>
+    <a href="/logout">Logout</a>
+
     <button @click="fetchData">Fetch API</button>
     <button @click="pingIdeas">Ping Ideas</button>
     <router-link to="/about">About</router-link>
+    <router-link to="/ideas">Ideas</router-link>
     <a href="/about">About backend router</a>
     <pre>{{ user }}</pre>
   </main>

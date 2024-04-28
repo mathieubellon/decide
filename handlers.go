@@ -44,8 +44,6 @@ func ListIdeas(ctx *fiber.Ctx) error {
 	db.Model(&Workspace{}).Preload("Ideas").Find(&workspace, store.Get("workspaceID").(uint))
 
 	return ctx.JSON(&fiber.Map{
-		"page":  "ideas",
-		"idea":  idea,
 		"ideas": workspace.Ideas,
 	})
 }
