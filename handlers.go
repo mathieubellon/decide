@@ -64,12 +64,6 @@ func Me(ctx *fiber.Ctx) error {
 	if errow != nil {
 		return err
 	}
-	fmt.Println(user)
-
-	// workspace := Workspace{}
-	// db.Where("email = ?", sess.Get("userEmail")).First(&user)
-
-	// db.Model(&workspace).Preload("Users").Find(&user)
 
 	return ctx.JSON(&fiber.Map{
 		"page":          "me",

@@ -4,7 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func MakeSession(c *fiber.Ctx) error {
+func Protect(c *fiber.Ctx) error {
 	// Perform tasks before the route handling function
 	println("Middleware: Request received")
 
