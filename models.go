@@ -1,18 +1,8 @@
 package main
 
 import (
-	"time"
-
 	"gorm.io/gorm"
 )
-
-type User struct {
-	ID        uint   `gorm:"primaryKey"`
-	Email     string `gorm:"unique"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Password  lin_api_fdYscgaOYjWWB3FmjPItEpb6REPTzrKZ5SIB3VNl `gorm:"not null"`
-}
 
 type User struct {
 	gorm.Model `json:"-"`
