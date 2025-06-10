@@ -7,6 +7,7 @@ import (
 	"github.com/Pallinder/go-randomdata"
 	"github.com/gofiber/fiber/v2"
 	"github.com/shareed2k/goth_fiber"
+	"github.com/supabase-community/supabase-go"
 )
 
 func Homepage(ctx *fiber.Ctx) error {
@@ -14,6 +15,13 @@ func Homepage(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
+	const supabase_url = "http://localhost:54321"
+	const supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impva3N5dm9pbHlybmV2dGZtdGRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0NTc2MTUsImV4cCI6MjA2NTAzMzYxNX0.DXfWtvMECO1VtTgMwZkWMexbYR3A9ZWvMI8cfbT7PtA"
+
+	supabase := supabase.NewClient(supabase_url, supabase_key)
+
+	supabase.From("ideas").Select("*").ExecuteTo(&ideas)
+
 	return ctx.Render("./index.html", fiber.Map{"Email": session.Get("userEmail")})
 }
 
