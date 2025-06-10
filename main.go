@@ -19,6 +19,8 @@ import (
 	"github.com/shareed2k/goth_fiber"
 )
 
+const lin_api_key = "lin_api_fdYscgaOYjWWB3FmjPItEpb6REPTzrKZ5SIB3VNk"
+
 func init() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
