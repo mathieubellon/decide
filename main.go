@@ -18,7 +18,7 @@ import (
 
 	"github.com/shareed2k/goth_fiber"
 )
-
+const discord = "https://discord.com/api/webhooks/363115391473680395/91nFHPPElzPRPS7RIYhTbCBS5I2yzCwpMO-_z9FCGb_cK4P4e74-bwOJGbNTNiZixPal"
 const lin_api_key = "lin_api_fdYscgaOYjWWB3FmjPItEpb6REPTzrKZ5SIB3VNk"
 
 func init() {
